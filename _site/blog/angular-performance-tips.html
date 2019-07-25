@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Latest Angular News, Tips and Tricks! We also provide professional Angular consulting services.">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/@angular-guru/guru-theme@0.1.1/dist/theme.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Angular Guru</title>
+
+    <meta itemprop="name" content="Angular Guru">
+    <meta itemprop="description" content="Latest News, Tips &amp; Trick for all things Angular">
+    <meta itemprop="image" content="http://localhost:4000/assets/images/angular-performance.jpg">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@TheAngularGuru">
+    <meta name="twitter:title" content="15 Angular Performance Tips & Tricks">
+    <meta name="twitter:description" content="Learn some useful tips and tricks to make your Angular application blazing fast!">
+    <meta name="twitter:image" content="http://localhost:4000/assets/images/angular-performance.jpg">
+
+    <meta property="og:title" content="15 Angular Performance Tips & Tricks">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="http://localhost:4000/blog/angular-performance-tips">
+    <meta property="og:image" content="http://localhost:4000/assets/images/angular-performance.jpg">
+    <meta property="og:description" content="Learn some useful tips and tricks to make your Angular application blazing fast!">
+    <meta property="og:site_name" content="Angular Guru">
+
+    <meta property="article:published_time" content="2018-08-08 00:00:00 +0100">
+    <meta property="article:modified_time" content="2018-08-08 00:00:00 +0100">
+</head>
+
+<body>
+    <div class="banner">
+    <div class="banner-content">
+        <div class="container">
+            <div class="row">
+                <div class="col-sm-12 text-center">
+                    <h1 class="text-white text-center">Blog</h1>
+                    <p class="text-white-50 text-center">Latest News, Tips and Tricks for all things Angular</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+    <div class="container pt-5">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-end mb-3">
+                <!-- Twitter Buttons -->
+                <div class="d-inline-block mr-2">
+                    <a href="https://twitter.com/share?ref_src=twsrc%5Etfw" class="twitter-share-button"
+                        data-size="large" data-show-count="false">Tweet</a>
+                </div>
+
+                <div class="d-inline-block">
+                    <a href="https://twitter.com/TheAngularGuru?ref_src=twsrc%5Etfw" class="twitter-follow-button"
+                        data-size="large" data-show-count="false">Follow @TheAngularGuru</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-12">
+            <h3>15 Angular Performance Tips & Tricks</h3>
+            <h6 class="text-muted mb-4">Wednesday, August 8, 2018</h6>
+
+            <p>Angular is a fantastic framework, packed with useful goodies to make developing an application much simpler. However Angular is not a small framework, and if certain optimizations are not made you can end up negatively impacting performance and your user experience.</p>
+
+<p>For example, a newly created Angular CLI project built in development mode will produce JavaScript totaling 3mb in size, for essentially a hello world application! So it is essential to follow some best practices to make sure page load times, and general application performance remains fast!</p>
+
+<h4 id="1-production-builds">1. Production Builds</h4>
+
+<p>Let’s start simple! When building your application to deploy it we want to ensure we do a production build. This will perform lots of optimizations as part of the build which are not included in a development build.</p>
+
+<h6 id="aot-compilation">AOT Compilation</h6>
+
+<p>When running a production build, Angular using JIT (just in time) compilation, which essentially means, Angular compiles your views in the browser at runtime. This has two downsides. First, the compilation process must run before your application can be used, and this can increase the time it takes for your site to load. Secondly, we have to ship the Angular compiler with your application, and it is not a small module!</p>
+
+<p>By taking advantage of AOT (ahead of time) compilation, we move this step to build time so we do it once when building our application, and only ship the compiled templates. We can now remove the Angular compiler from our bundle (reducing our bundle size by ~1mb) and allows us to skip the compilation step making our pages load much quicker!</p>
+
+<h6 id="minification">Minification</h6>
+
+<p>Code minification is the process tools like UglifyJS perform to optimize the code we have written. It performs many optimizations, for example, removing whitespace, renaming properties, dead code elimination and much much more.</p>
+
+<p>When developing having well named variables make development much easier, but when shipping our applications we don’t need these names to be so helpful, so while <code class="highlighter-rouge">averageUserAge</code> might be useful when developing this could be renamed to <code class="highlighter-rouge">a1</code> reducing the amount of code needed to be shipped.</p>
+
+<p>It can also detect code paths that will never be executed, for example an if statement where the condition can never be satisfied:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">if</span> <span class="p">(</span><span class="kc">false</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="dl">'</span><span class="s1">This would never be executed</span><span class="dl">'</span><span class="p">);</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>We can safely remove this code without worrying about breaking our application.</p>
+
+<p>We can also minify our stylesheets as well. We generally aren’t able to make quite as significant savings as we can with JavaScript code, but it can remove unneeded whitespace and shorten color values eg: <code class="highlighter-rouge">#ffffff</code> to <code class="highlighter-rouge">#fff</code> along with some other tweaks as well.</p>
+
+<p>This process can reduce our bundle size often by megabytes.</p>
+
+<h6 id="build-optimizer">Build Optimizer</h6>
+
+<p>This is a tool created by the Angular team to identify some additional code that can be removed at build time.</p>
+
+<p>For example, it can mark certain functions as “pure” indicating to UglifyJS that these functions can be removed without side effects.</p>
+
+<p>If you have ever looked at compiled TypeScript code that uses decorators you may notice that it generates quite a lot of code to use them. The build optimizer can optimize this code for Angular decorators and reduce the code required quite significantly. It performs some other optimizations which can be found here: <a href="https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/build_optimizer">https://github.com/angular/angular-cli/tree/master/packages/angular_devkit/build_optimizer</a></p>
+
+<p>If you are using the CLI you can ensure the <code class="highlighter-rouge">buildOptimizer</code> flag is set to true in your <code class="highlighter-rouge">angular.json</code> file.</p>
+
+<h6 id="running-a-production-build">Running a Production Build</h6>
+
+<p>You can perform a production build that automatically performs all the optimizations mentioned above by adding the <code class="highlighter-rouge">--prod</code> flag when running an <code class="highlighter-rouge">ng build</code>.</p>
+
+<h4 id="2-lazy-loading-modules">2. Lazy Loading Modules</h4>
+
+<p>Most applications will have more than one pages, for example, you may have a home page, a login page and a profile page. By default, when your application starts, the browser will load all the code required for all of these pages even if the user never visits them. Luckily, Angular provides us with an easy way to only load pages when the user wants to navigate to them and this comes built in to the router.</p>
+
+<p>As a prerequisite to this, each page you wish to lazy load must have its own NgModule that imports the <code class="highlighter-rouge">RouterModule</code> and provides its own routes using the <code class="highlighter-rouge">forChild</code> function.</p>
+
+<p>Note, it is best not to lazy load the default route, as this is the first page most users will land on, and by lazy loading it the user will have to wait on an additional request.</p>
+
+<p>Before Lazy Loading:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="kd">const</span> <span class="nx">routes</span><span class="p">:</span> <span class="nx">Routes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">''</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="nx">HomeComponent</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">login</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="nx">LoginComponent</span>
+    <span class="p">}</span>
+<span class="p">];</span></code></pre></figure>
+
+<p>After Lazy Loading:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="kd">const</span> <span class="nx">routes</span><span class="p">:</span> <span class="nx">Routes</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">''</span><span class="p">,</span>
+        <span class="na">component</span><span class="p">:</span> <span class="nx">HomeComponent</span>
+    <span class="p">},</span>
+    <span class="p">{</span>
+        <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">login</span><span class="dl">'</span><span class="p">,</span>
+        <span class="na">loadChildren</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./login/login.module#LoginModule</span><span class="dl">'</span> 
+    <span class="p">}</span>
+<span class="p">];</span> </code></pre></figure>
+
+<p>Now our application will only load the code for these pages when it is essential giving us a quick and easy improvement to our application.</p>
+
+<h4 id="3-enable-production-mode">3. Enable Production Mode</h4>
+
+<p>This is a very simple one, and one that your application is likely already doing if you are using the CLI, but it’s extremely simple to do, and beneficial to ensure you are doing it.</p>
+
+<p>Angular, by default runs in debug mode, which essentially adds in some assertion checks and more importantly (at least for performance) it runs ChangeDetection twice each time to ensure there are no unexpected changes to values. You have likely come across the error <code class="highlighter-rouge">expression has changed after it was checked</code>, which occurs due to this second change detection pass.</p>
+
+<p>It is very simple to enable production mode, and is usually done like this:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">if</span> <span class="p">(</span><span class="nx">environment</span><span class="p">.</span><span class="nx">production</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nx">enableProdMode</span><span class="p">();</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="4-onpush-change-detection">4. OnPush Change Detection</h4>
+
+<p>When an event occurs (eg. dom event, timeout, interval, http request etc…) Angular runs change detection so see if there are any values that have changed that require the view to be updated. This process is very fast, especially compared to AngularJS. This is largely down to the unidirectional data flow now used in Angular. However, even with the great performance improvements, as your application grows this can become slower.</p>
+
+<p>By default, Angular will check every component that may have been affected to see if there have been changes, but we can be smarter, and tell Angular to only run change detection when an Input changes or when we manually trigger it. This will allow us to skip change detection in this component in most cases giving us a speed boost.</p>
+
+<p>We can do this by specifying the change detection strategy in the component decorator:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="p">@</span><span class="nd">Component</span><span class="p">({</span>
+    <span class="na">selector</span><span class="p">:</span> <span class="dl">'</span><span class="s1">my-progress-bar</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">templateUrl</span><span class="p">:</span> <span class="dl">'</span><span class="s1">./progress-bar.html</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">changeDetection</span><span class="p">:</span> <span class="nx">ChangeDetectionStrategy</span><span class="p">.</span><span class="nx">OnPush</span>
+<span class="p">})</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">ProgressBar</span> <span class="p">{</span>
+    <span class="p">@</span><span class="nd">Input</span><span class="p">()</span> <span class="nx">value</span><span class="p">:</span> <span class="nx">number</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>OnPush change detection is easily used when using a reactive state management solution like NGRX - we will cover more about this later.</p>
+
+<h4 id="5-preserve-whitespaces">5. Preserve Whitespaces</h4>
+
+<p>This is another dead easy optimization that can reduce your bundle size by a small amount, but every little bit helps! In Angular 5, they introduced a new feature called <code class="highlighter-rouge">preserveWhitespaces</code> which allows you to tell the compiler to remove any whitespaces between elements. By default the compiler includes these as it can have a small effect on spacing.</p>
+
+<p>In your applications <code class="highlighter-rouge">tsconfig.json</code> you can add the following to tell the compiler to remove whitespaces in all templates by default:</p>
+
+<figure class="highlight"><pre><code class="language-json" data-lang="json"><span class="nl">"angularCompilerOptions"</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w">
+    </span><span class="nl">"preserveWhitespaces"</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span><span class="w">
+</span><span class="p">}</span></code></pre></figure>
+
+<p>We can also do this on a per-component basis and we can access this property in the component decorator, eg:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="p">@</span><span class="nd">Component</span><span class="p">({</span>
+    <span class="na">selector</span><span class="p">:</span> <span class="dl">'</span><span class="s1">my-progress-bar</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">templateUrl</span><span class="p">:</span> <span class="dl">'</span><span class="s1">progress-bar.component.html</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">preserveWhitespaces</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">})</span></code></pre></figure>
+
+<p>Finally, we may want to preserve whitespaces for a particular element, which we can do by using a directive:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;div</span> <span class="na">ngPreserveWhitespaces</span><span class="nt">&gt;</span>
+
+    <span class="nt">&lt;p&gt;</span>Any Whitespaces in this div will be retained<span class="nt">&lt;/p&gt;</span>
+
+<span class="nt">&lt;/div&gt;</span></code></pre></figure>
+
+<h4 id="6-avoid-function-calls-in-views">6. Avoid Function Calls in Views</h4>
+
+<p>So this is a simple best practice to follow when writing your components. You should avoid calling functions directly from your view. There may be some cases where this is unavoidable, but for most cases this can be avoided.</p>
+
+<p>Let’s say we have the following view:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;h1&gt;</span>{{ header }}<span class="nt">&lt;/h1&gt;</span>
+<span class="nt">&lt;h5&gt;</span>{{ getSubtitle() }}<span class="nt">&lt;/h5&gt;</span></code></pre></figure>
+
+<p>Below is a simple pseudo code example of roughly what happens when change detection is run:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">if</span> <span class="p">(</span><span class="nx">header</span> <span class="o">!==</span> <span class="nx">previousHeader</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do update</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="p">(</span><span class="nx">getSubtitle</span><span class="p">()</span> <span class="o">!==</span> <span class="nx">previousSubtitle</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">// do update</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As you can see here every time change detection runs, we cannot simply check whether the subtitle has changed. We instead have to call the function before we can perform the check. Function calls have overhead and if you have this kind of code throughout your application this will start to have a noticeable effect!</p>
+
+<p>In most cases, values are updated as part of an event or when an http request returns, so use these to store the latest value in a variable instead, eg:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="p">{</span>
+    <span class="nl">header</span><span class="p">:</span> <span class="nx">string</span> <span class="o">=</span> <span class="dl">'</span><span class="s1">App Header</span><span class="dl">'</span><span class="p">;</span>
+    <span class="nl">subtitle</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">http</span><span class="p">:</span> <span class="nx">HttpClient</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">http</span><span class="p">.</span><span class="kd">get</span><span class="p">(</span><span class="dl">'</span><span class="s1">https://abc.xyz/api/subtitle</span><span class="dl">'</span><span class="p">,</span> <span class="p">(</span><span class="nx">result</span><span class="p">)</span> <span class="o">=&gt;</span> <span class="k">this</span><span class="p">.</span><span class="nx">subtitle</span> <span class="o">=</span> <span class="nx">result</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="7-avoid-getters-in-view">7. Avoid Getters in View</h4>
+
+<p>This is essentially an addendum to the previous point. It is quite common to use getters/setters when writing component classes. They can be incredible useful, but while you interact with them like you would any other variable, it is important to remember that they are in fact functions even though you don’t use them like one.</p>
+
+<p>As a result, using a getter in the view is the same as calling a function as shown above. Avoid these if possible, and where possible use a separate variable to store the value accessed by the view, eg:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="p">{</span>
+
+    <span class="kd">set</span> <span class="nx">name</span><span class="p">(</span><span class="nx">value</span><span class="p">:</span> <span class="nx">string</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// do stuff here when the name value changes</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">viewName</span> <span class="o">=</span> <span class="nx">value</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="c1">// rather than have a getter that is accessed in the view, store the latest value here</span>
+    <span class="nl">viewName</span><span class="p">:</span> <span class="nx">string</span><span class="p">;</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="8-pure-pipes">8. Pure Pipes</h4>
+
+<p>As mentioned before, sometime you need to call a function in the view, but in many cases we can use a Pipe instead (more importantly a pure pipe). What is the difference between a pipe and a pure pipe? A pure pipe is a pipe that given the same input value will always return the same output, and this is a very important differentiation when it comes to optimization.</p>
+
+<p>Lets take a look at simple pipe that takes in some text and makes it lowercase:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="p">@</span><span class="nd">Pipe</span><span class="p">({</span>
+    <span class="na">name</span><span class="p">:</span> <span class="dl">'</span><span class="s1">lowercase</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">pure</span><span class="p">:</span> <span class="kc">false</span>
+<span class="p">})</span>
+<span class="k">export</span> <span class="kd">class</span> <span class="nx">LowerCasePipe</span> <span class="kr">implements</span> <span class="nx">PipeTransform</span> <span class="p">{</span>
+    <span class="nx">transform</span><span class="p">(</span><span class="nx">value</span><span class="p">:</span> <span class="nx">string</span><span class="p">):</span> <span class="nx">string</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nx">value</span><span class="p">.</span><span class="nx">toLowerCase</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>This can be used in our view like this:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;h1&gt;</span>{{ name | lowercase }}<span class="nt">&lt;/h1&gt;</span></code></pre></figure>
+
+<p>Currently the pipe is marked as impure, which means, every time change detection is run this transform function will be called to see if the returned value has changed. As we have already discussed this is not really a good idea.</p>
+
+<p>But lets look at the code for this pipe. Notice, the transform function only uses the <code class="highlighter-rouge">value</code> variable that is passed into it. It does not require any other external information and doesn’t relies on changing information such as the date or a random number. So we can know for sure if I pass in the string <code class="highlighter-rouge">AngularGuru</code> this pipe will always return <code class="highlighter-rouge">angularguru</code>.</p>
+
+<p>We can now mark this pipe as pure (note pipes are pure by default), and Angular now knows, if the value passed into the pipe does not change then we do not need to called the function.</p>
+
+<p>So consider making your own pure pipes when you need to call a function from the view!</p>
+
+<h4 id="9-the-angular-zone">9. The Angular Zone</h4>
+
+<p>In AngularJS we often run into times when our view didn’t update when it was supposed to because some asynchronous function updated data and AngularJS wasn’t aware of it. As a result we had to use the AngularJS alternatives for things like timeouts and intervals. This was fine for the most part but still commonly led to times where we had to manually trigger a digest (update the view).</p>
+
+<p>As part of Angular 2 the team introduced a library called Zone.js. This library provided an execution context for our application to run in. While this sounds confusing, it essentially means they patch all asynchronous browser functions, so when an asynchronous function runs they know to perform change detection automatically, and for the most part, it works so much better than the AngularJS solution.</p>
+
+<p>However, there are times when we are running some function that we know isn’t going to have an effect on data so we don’t need Angular to be aware of it. A few instances of this could be repeatedly called <code class="highlighter-rouge">requestAnimationFrame</code> to redraw the contents of a canvas, or using <code class="highlighter-rouge">setInterval</code> to print out to the console. Unless you otherwise specify, Angular will always run change detection when these events occur which can have pretty severe performance impacts on your application. Luckily, it is really easy to avoid!</p>
+
+<p>Lets say we have an interval that prints the time out to the console every 100ms:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">()</span> <span class="p">{</span>
+        <span class="nx">setInterval</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()),</span> <span class="mi">100</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>As mentioned this would run change detection every 100ms unnecessarily. To avoid this, we can inject <code class="highlighter-rouge">NgZone</code> and run this interval outside of the Angular zone.</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="p">{</span>
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">ngZone</span><span class="p">:</span> <span class="nx">NgZone</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">ngZone</span><span class="p">.</span><span class="nx">runOutsideAngular</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="nx">setInterval</span><span class="p">(()</span> <span class="o">=&gt;</span> <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="k">new</span> <span class="nb">Date</span><span class="p">().</span><span class="nx">getTime</span><span class="p">()),</span> <span class="mi">100</span><span class="p">);</span>  
+        <span class="p">});</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>And that’s it! Problem solved!</p>
+
+<h4 id="10-check-your-ngdocheck">10. Check your ngDoCheck</h4>
+
+<p>Angular provides us with a range of lifecycle hooks we can take advantage of in our components. One such hook is <code class="highlighter-rouge">ngDoCheck</code> which is called each time whenever change detection is run.</p>
+
+<p>As a result, this function is going to get called a lot! If you are doing anything in this function that is in anyway computationally intensive or slow, you are going to experience slow down and there is likely a better place to be doing it.</p>
+
+<h4 id="11-async-pipe">11. Async Pipe</h4>
+
+<p>This is one of my favorite little Angular utilities. It essentially allows us to use RxJS observables directly in our view. Observables are used quite heavily in parts of Angular and once you get over the initial learning curve they provide a great reactive programming experience!</p>
+
+<p>But there is more!</p>
+
+<p>You need to be careful when using observables as it is very easy to subscribe to one, and then forget to unsubscribe, which can cause memory leaks in your application, which over time can cause slowdown. By using the Async pipe Angular automatically handles all the cleanup for you.</p>
+
+<p>Probably the best thing about the Async pipe is that is allows us to make great use of OnPush change detection. Because we can subscribe to an observable, we can know exactly when the value has changed. There is no guess work involved. Normally Angular waits for an event and then checks to see if there have been any changes, but with observables we can flip this, as we know when a change has occurred we can inform Angular and intelligently update the view only when we are certain it needs to - and the Async pipe also does this for us automatically.</p>
+
+<p>This works great with state management libraries such as NGRX which if fully utilized we can essentially make our entire application use OnPush change detection as all our state is handled through observables.</p>
+
+<p>Using the Async pipe is as simple as:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;h1&gt;</span>{{ nameObservable | async }}<span class="nt">&lt;/h1&gt;</span></code></pre></figure>
+
+<h4 id="12-unsubscribe">12. Unsubscribe</h4>
+
+<p>As previously mentioned, Angular uses observables quite a lot, and if you make any HTTP requests or are listening to router events, you will too.</p>
+
+<p>Observables are great, but you need to ensure once you are finished with them that you unsubscribe, otherwise memory leaks can occur and this can cause performance issues.</p>
+
+<p>Unsubscribing is easy, you store the subscription, and then use the <code class="highlighter-rouge">ngOnDestroy</code> lifecycle hook to unsubscribe, eg:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="kr">implements</span> <span class="nx">OnDestroy</span> <span class="p">{</span>
+    <span class="kr">private</span> <span class="nx">_subscription</span><span class="p">:</span> <span class="nx">Subscription</span><span class="p">;</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">router</span><span class="p">:</span> <span class="nx">Router</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_subscription</span> <span class="o">=</span> <span class="nx">router</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// do stuff here</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="nx">ngOnDestroy</span><span class="p">():</span> <span class="k">void</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_subscription</span><span class="p">.</span><span class="nx">unsubscribe</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<p>If you have multiple subscriptions there is an <code class="highlighter-rouge">add</code> function available on the subscription object which you can store all subscriptions in one object, however an alternative approach is to have an observable that will emit when the component is destroyed and it will automatically unsubscribe all others. For example:</p>
+
+<figure class="highlight"><pre><code class="language-typescript" data-lang="typescript"><span class="k">export</span> <span class="kd">class</span> <span class="nx">AppComponent</span> <span class="kr">implements</span> <span class="nx">OnDestroy</span> <span class="p">{</span>
+
+    <span class="kr">private</span> <span class="nx">_onDestroy</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Subject</span><span class="o">&lt;</span><span class="k">void</span><span class="o">&gt;</span><span class="p">();</span>
+
+    <span class="kd">constructor</span><span class="p">(</span><span class="nx">router</span><span class="p">:</span> <span class="nx">Router</span><span class="p">)</span> <span class="p">{</span>
+        <span class="nx">router</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">pipe</span><span class="p">(</span><span class="nx">takeUntil</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_onDestroy</span><span class="p">)).</span><span class="nx">subscribe</span><span class="p">(</span><span class="nx">event</span> <span class="o">=&gt;</span> <span class="p">{</span>
+            <span class="c1">// do stuff here</span>
+        <span class="p">});</span>
+    <span class="p">}</span>
+
+    <span class="nx">ngOnDestroy</span><span class="p">():</span> <span class="k">void</span> <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_onDestroy</span><span class="p">.</span><span class="nx">next</span><span class="p">();</span>
+        <span class="k">this</span><span class="p">.</span><span class="nx">_onDestroy</span><span class="p">.</span><span class="nx">complete</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></figure>
+
+<h4 id="13-track-by-function">13. Track By Function</h4>
+
+<p>Manipulating the DOM is an expensive task, and this can be very evident when it comes to rendering long lists of items, usually achieved by using the <code class="highlighter-rouge">*ngFor</code> directive.</p>
+
+<p>By default, <code class="highlighter-rouge">ngFor</code> performs a simple equality check to see if items have changed. This is fine when it is a list of simple primitives such as numbers or strings, but can become a little bit more complicated when it comes to lists of objects.</p>
+
+<p>As mentioned, it performs a simple equality check, which simply checks if the two objects are the same by reference, not by the properties within them.</p>
+
+<p>It is common when using any Redux style architecture to enforce immutability, in other words any time the list of objects changes, each object within it will be a new object, and have a different reference even though the contents of it may be the same. As a result when <code class="highlighter-rouge">ngFor</code> performs it’s equality check, it will think the entire list contents have changed causing a complete re-render. Not exactly ideal for making your application performant.</p>
+
+<p>The <code class="highlighter-rouge">ngFor</code> directive does however give us a simple solution in the form of a <code class="highlighter-rouge">trackBy</code> function. This is a function that we can provide to determine if the object is the same or not. For example, each object may have a unique id, which we can use to see if the item has changed. We can use this feature like so:</p>
+
+<figure class="highlight"><pre><code class="language-html" data-lang="html"><span class="nt">&lt;ul&gt;</span>
+    <span class="nt">&lt;li</span> <span class="na">*ngFor=</span><span class="s">"let document of documents; trackBy: trackByFn"</span><span class="nt">&gt;</span>{{ document.name }}<span class="nt">&lt;/li&gt;</span>
+<span class="nt">&lt;/ul&gt;</span></code></pre></figure>
+
+<p>And that’s it! The <code class="highlighter-rouge">ngFor</code> directive can now perform efficient updates.</p>
+
+<h4 id="14-profiling">14. Profiling</h4>
+
+<p>There are many things that I can list to improve performance and even if your application followed everything listed here you may still have performance issues. That is simply because each application is different, it will use different third party libraries and be architected differently. And this is where profiling comes in!</p>
+
+<p>The developer tools for all modern browser come equipped with performance profiling tools to help identify code that is running slowly, which is great to help figure out how you can improve it further.</p>
+
+<p>There are a few other tools you can use to help improve performance, first the Webpack Bundle Analyzer. This tool allows you to visually explore your bundle. It can let you see what modules or libraries are the largest, but more importantly it can help identify items that should not have been included in the bundle. For example if you are using an older version of RxJS, accidentally importing directly from <code class="highlighter-rouge">rxjs</code> would have included the whole library in your bundle. Tools like this can help spot this kind of mistake and allow you to easily rectify it.</p>
+
+<p>Lighthouse testing is another great way to see how you application performs on a range of devices. It is a tool now built in to the Chrome Dev Tools. It will profile many aspects of your application, such a load performance, accessibility, PWA support, SEO optimization and Best Practices. It can also give you a good indication about how well your site will perform in regards to Google rankings as many of these criteria it tests for will affect the site ranking.</p>
+
+<p>The Angular CLI also comes with a useful tool called Budgets. You can configure these within the <code class="highlighter-rouge">angular.json</code> file. They allow you to impose file size limits on your scripts and stylesheets to ensure their file size doesn’t grow beyond acceptable limits. You can specify when it should warn you and when it should throw an error. This is very useful when it comes to accidental imports, as mentioned before, if you use budgets and then accidentally imported the entire RxJS library, budgets would immediately warn you that your bundle size has increased dramatically, prevent this from going unnoticed for an extended period of time.</p>
+
+<h4 id="15-notable-mentions">15. Notable Mentions</h4>
+
+<p>Lastly I will mention some additional things you can do to increase performance. They are slightly less related to the code of your application and more so the configuration and server setup.</p>
+
+<h6 id="compression">Compression</h6>
+
+<p>This is an obvious choice but often overlooked. Most browsers nowadays support gzipped resources. This allows your server to compress the website resources and send them to the browser. This can decrease the amount of data transmitted by ~75%. There are a vast range of different servers out there so I will not cover examples of how to configure it, but it is usually simply a matter of turning it on in a configuration file or adding in some middleware in the case of <code class="highlighter-rouge">express</code>.</p>
+
+<h6 id="server-side-rendering">Server Side Rendering</h6>
+
+<p>Angular provides several options when it comes to server side rendering. We have the full Angular Universal option which will render your website on the server and send it to the browser when the Angular application will take over and make it interactive. This is great for SEO and essentially required when it comes to adding social media metadata. It is fairly easy to setup, in fact this site uses Angular Universal, however it does require you to have a Node based server. If you are interested in this take a look at <a href="https://github.com/maciejtreder/ng-toolkit">@ng-toolkit</a> which provides schematics to set it all up for you.</p>
+
+<p>There are also additional options like AppShell which will pre-render the default route into the index.html for faster start up times and <a href="https://prerender.io/">Prerender</a> which is another alternative.</p>
+
+<h6 id="progressive-web-application">Progressive Web Application</h6>
+
+<p>A progressive web application, utilizes local browser caching to allow your application to work similar to a native mobile application, providing most features even when offline. It will also be able to serve resources from a local cache reducing the number of network requests needed.</p>
+
+<p>There are <a href="https://angular.io/guide/service-worker-getting-started">schematics for the Angular CLI</a> to make the setup process incredibly easy.</p>
+
+<h6 id="web-workers">Web Workers</h6>
+
+<p>Lastly, I will briefly mention this option. This is not widely used and there are some limitations with this option but if your application does some computationally intensive tasks that make the UI unresponsive this can be a great solution. Angular provides support to run the framework in a background thread, leaving the user experience fluid and responsive regardless of what processing you are doing.</p>
+
+<h4 id="conclusion">Conclusion</h4>
+
+<p>As you can tell performance is not a simple subject. There are many things to consider and this list cover a few of the most common. Hopefully it covers a few of the most common and helps speed up your application.</p>
+
+        </div>
+    </div>
+    <div class="row mb-2">
+        <div class="col-12">
+            <hr>
+            <p class="text-center h5">
+                <a class="hyperlink" href="/">View More Articles</a>
+            </p>
+            <hr>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <script type="text/javascript" src="//contextual.media.net/nmedianet.js?cid=8CU725383">medianet_width = "728";
+                medianet_height = "90";
+                medianet_crid = "825343823";
+                medianet_versionId = "3111299";</script>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <!-- Disqus -->
+            <div id="disqus_thread"></div>
+            <script>
+
+                /**
+                *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+                *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables*/
+                var disqus_config = function () {
+                    this.page.url = "http://localhost:4000/blog/angular-performance-tips";  // Replace PAGE_URL with your page's canonical URL variable
+                    this.page.identifier = "angular-performance-tips"; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+                };
+
+                (function () { // DON'T EDIT BELOW THIS LINE
+                    var d = document, s = d.createElement('script');
+                    s.src = 'https://angular-guru.disqus.com/embed.js';
+                    s.setAttribute('data-timestamp', +new Date());
+                    (d.head || d.body).appendChild(s);
+                })();
+            </script>
+            <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered
+                    by Disqus.</a></noscript>
+        </div>
+    </div>
+</div>
+
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+    <div class="container py-4">
+    <div class="row">
+        <div class="col-12">
+            <p class="text-center text-muted">Copyright © 2019 Angular Guru</p>
+        </div>
+    </div>
+</div>
+</body>
+
+</html>

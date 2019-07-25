@@ -1,0 +1,19 @@
+---
+layout: default
+---
+
+<div class="container pt-5">
+    <div class="row">
+        {% for post in site.posts %}
+        <div class="col-md-6 col-lg-4 pb-4">
+            <a class="card shadow-sm h-100 text-decoration-none" href="{{ post.url }}">
+                <img alt="Blog Article" class="card-img-top" src="{{ post.image }}">
+                <div class="card-body">
+                    <h5 class="card-title text-dark">{{ post.title }}</h5>
+                    <p class="card-text text-muted">{{ post.description }}</p>
+                </div>
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</div>

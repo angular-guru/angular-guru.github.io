@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="Latest Angular News, Tips and Tricks! We also provide professional Angular consulting services.">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <link rel="stylesheet" href="https://unpkg.com/@angular-guru/guru-theme@0.1.1/dist/theme.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <title>Angular Guru</title>
+
+    <meta itemprop="name" content="Angular Guru">
+    <meta itemprop="description" content="Latest News, Tips &amp; Trick for all things Angular">
+    <meta itemprop="image" content="{{ site.url }}/{{ page.image }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@TheAngularGuru">
+    <meta name="twitter:title" content="{{ page.title }}">
+    <meta name="twitter:description" content="{{ page.description }}">
+    <meta name="twitter:image" content="{{ site.url }}/{{ page.image }}">
+
+    <meta property="og:title" content="{{ page.title }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{{ site.url }}{{ page.url }}">
+    <meta property="og:image" content="{{ site.url }}/{{ page.image }}">
+    <meta property="og:description" content="{{ page.description }}">
+    <meta property="og:site_name" content="Angular Guru">
+
+    <meta property="article:published_time" content="{{ page.date }}">
+    <meta property="article:modified_time" content="{{ page.date }}">
+</head>
+
+<body>
+    {% include header.html %}
+    {{ content }}
+    {% include footer.html %}
+</body>
+
+</html>
