@@ -16,7 +16,7 @@
 title: Angular Guru
 description: Latest News, Tips and Tricks for all things Angular
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
+url: "https://angular-guru.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 
 # Build settings
 markdown: kramdown
