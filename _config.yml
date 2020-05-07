@@ -28,6 +28,9 @@ collections:
     output: true
     permalink: /blog/:slug
 
+keep_files:
+  - .well-known/brave-rewards-verification.txt
+
 include:
   - .well-known/brave-rewards-verification.txt
 
