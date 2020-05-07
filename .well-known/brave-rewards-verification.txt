@@ -1,0 +1,4 @@
+This is a Brave Rewards publisher verification file.
+
+Domain: angular-guru.com
+Token: 16bbeb080f49d58a784c63cb4d2dee07336b7a83021be0d9f42b8db159bea1fa
