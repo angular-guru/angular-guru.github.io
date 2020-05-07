@@ -29,7 +29,7 @@ collections:
     permalink: /blog/:slug
 
 include:
-  - .well-known/
+  - .well-known/brave-rewards-verification.txt
 
 # Exclude from processing.
 # The following items will not be processed, by default. Create a custom list
